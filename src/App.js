@@ -25,7 +25,7 @@ function App() {
   return (
     <div className="App">
       <h1>El precio de bitcoin es</h1>
-      <h3>${price}</h3>
+      <h2>${price}</h2>
     </div>
   );
 }
