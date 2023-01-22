@@ -26,9 +26,65 @@ const PaymentsModal = ({ modalState, setModalState }) => {
     checkingId: "",
   });
 
-  const handleSend = () => {};
+  const handleSend = (e) => {
+    // Keep the page from refreshing when the form is submitted
+    e.preventDefault();
 
-  const handleReceive = () => {};
+    const headers = {
+      "X-Api-Key": "52cac212fc664da393ac45df991fdb84",
+    };
+    const data = {
+      bolt11: formData.invoiceToPay,
+      out: true,
+    };
+    axios
+      .post("https://legend.lnbits.com/api/v1/payments", data, { headers })
+      .then((res) =>
+        setPaymentInfo({
+          paymentHash: res.data.payment_hash,
+          checkingId: res.data.checking_id,
+        })
+      )
+      .catch((err) => console.log(err));
+  };
+
+  const handleReceive = (e) => {
+    // Keep the page from refreshing when the form is submitted
+    e.preventDefault();
+
+    const headers = {
+      "X-Api-Key": "52cac212fc664da393ac45df991fdb84",
+    };
+    const data = {
+      amount: formData.amount,
+      out: false,
+      // ToDo: Add additional form for user to be able to customize the memo
+      memo: "LNBits",
+    };
+    axios
+      .post("https://legend.lnbits.com/api/v1/payments", data, { headers })
+      .then((res) => setInvoice(res.data.payment_request))
+      .catch((err) => console.log(err));
+
+    return;
+  };
+
+  // Function to clear all of our state when we close the modal
+  const clearForms = () => {
+    setModalState({
+      type: "",
+      open: false,
+    });
+    setInvoice("");
+    setPaymentInfo({
+      paymentHash: "",
+      checkingId: "",
+    });
+    setFormData({
+      amount: 0,
+      invoiceToPay: "",
+    });
+  };
 
   return (
     <Modal
@@ -40,7 +96,7 @@ const PaymentsModal = ({ modalState, setModalState }) => {
       <p
         className="close-button"
         onClick={() => {
-          setModalState({ open: false, type: null });
+          clearForms();
         }}
       >
         X
